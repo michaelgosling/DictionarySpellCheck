@@ -9,23 +9,28 @@
 #ifndef BinaryTree_hpp
 #define BinaryTree_hpp
 
+#include <iostream>
 #include <stdio.h>
 #include <string>
 
-struct node {
+class Node {
+public:
 	std::string key;
-	struct node *left, *right;
+	Node *left, *right;
+	int height;
 };
 
 class BinaryTree {
 private:
-	struct node* root;
-	struct node* insert(struct node* node, std::string key);
-	struct node* search(struct node* root, std::string key);
+	int height(Node *N);
+	int max(int a, int b);
+	Node* newNode(std::string key);
+	Node *rightRotate(Node *y);
+	Node *leftRotate(Node *x);
+	int getBalance(Node *N);
 public:
-	struct node* newNode(std::string item);
-	struct node* insert(std::string key);
-	struct node* search(std::string key);
+	Node* insert(Node* node, std::string key);
+	void print(Node* node, int indent=0);
 };
 
 #endif /* BinaryTree_hpp */

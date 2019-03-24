@@ -16,12 +16,12 @@
 void SpellChecker::readFile(){
 	std::ifstream file;
 	std::string line;
+	root = nullptr;
 	try {
 		file.open(fileName);
 		if (file.is_open()){
-			while (!file.eof()){
-				dict.insert(line);
-			}
+			while (getline(file, line))
+				root = dict.insert(root, line);
 			file.close();
 		}
 	} catch (std::exception e){
@@ -50,4 +50,8 @@ SpellChecker::SpellChecker(std::string dictionaryFileName){
 void SpellChecker::Check(std::string word){
 	if (!checkSpelling(word))
 		std::cout << word << std::endl;
+}
+
+void SpellChecker::printTree() {
+	dict.print(root);
 }

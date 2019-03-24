@@ -7,7 +7,10 @@
 //
 
 #include <iostream>
+#include "SpellChecker.hpp"
 
 int main(int argc, const char * argv[]) {
+	SpellChecker checker("dictionary.txt");
+	checker.printTree();
 	return 0;
 }

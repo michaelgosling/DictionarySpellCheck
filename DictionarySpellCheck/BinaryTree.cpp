@@ -7,62 +7,145 @@
 //
 
 #include "BinaryTree.hpp"
-
-/* Functions sourced/modified from https://www.geeksforgeeks.org/binary-search-tree-set-1-search-and-insertion/ */
+#include <iomanip>
 
 /**
- * Creates a new Node
+ * Get height of node
  */
-struct node* BinaryTree::newNode(std::string item){
-	struct node *temp = (struct node*)malloc(sizeof(struct node));
-	temp->key = item;
-	temp->left = temp->right = nullptr;
-	return temp;
+int BinaryTree::height(Node *N) {
+	if (N == nullptr)
+		return 0;
+	return N->height;
 }
 
 /**
- * Inserts a new node into the binary search tree
+ * Get max of 2 integers
  */
-struct node* BinaryTree::insert(struct node* node, std::string key){
-	// If the tree is empty, return a new node with the given key
-	if (node == NULL) return newNode(key);
+int BinaryTree::max(int a, int b) {
+	return (a > b)? a : b;
+}
 
-	// Insert the key left or right of the node depending on it's compared value
+/**
+ * Create new node with given key
+ */
+Node* BinaryTree::newNode(std::string key) {
+	Node* node = new Node();
+	node->key = key;
+	node->left = nullptr;
+	node->right = nullptr;
+	node->height = 1;
+	return(node);
+}
+
+/**
+ * Rotate right
+ */
+Node* BinaryTree::rightRotate(Node *y) {
+	Node *x = y->left;
+	Node *T2 = x->right;
+
+	// Perform rotation
+	x->right = y;
+	y->left = T2;
+
+	// Update heights
+	y->height = max(height(y->left), height(y->right)) + 1;
+	x->height = max(height(x->left), height(x->right)) + 1;
+
+	// Return new root
+	return x;
+}
+
+/**
+ * Rotate Left
+ */
+Node* BinaryTree::leftRotate(Node *x) {
+	Node *y = x->right;
+	Node *T2 = y->left;
+
+	// Perform rotation
+	y->left = x;
+	x->right = T2;
+
+	// Update heights
+	x->height = max(height(x->left),
+					height(x->right)) + 1;
+	y->height = max(height(y->left),
+					height(y->right)) + 1;
+
+	// Return new root
+	return y;
+}
+
+/**
+ * Get balance of node
+ */
+int BinaryTree::getBalance(Node *N) {
+	if (N == nullptr)
+		return 0;
+	return height(N->left) - height(N->right);
+}
+
+Node* BinaryTree::insert(Node* node, std::string key) {
+	/* 1. Perform the normal BST insertion */
+	if (node == nullptr)
+		return(newNode(key));
+
 	if (key.compare(node->key) < 0)
-		node->left  = insert(node->left, key);
+		node->left = insert(node->left, key);
 	else if (key.compare(node->key) > 0)
 		node->right = insert(node->right, key);
+	else // Equal keys are not allowed in BST
+		return node;
 
-	// Return the node itself if the key matches
+	/* 2. Update height of this ancestor node */
+	node->height = 1 + max(height(node->left),
+						   height(node->right));
+
+	/* 3. Get the balance factor of this ancestor
+	 node to check whether this node became
+	 unbalanced */
+	int balance = getBalance(node);
+
+	// If this node becomes unbalanced, then
+	// there are 4 cases
+
+	// Left Left Case
+	if (balance > 1 && key.compare(node->left->key) < 0)
+		return rightRotate(node);
+
+	// Right Right Case
+	if (balance < -1 && key.compare(node->right->key) > 0)
+		return leftRotate(node);
+
+	// Left Right Case
+	if (balance > 1 && key.compare(node->left->key) > 0) {
+		node->left = leftRotate(node->left);
+		return rightRotate(node);
+	}
+
+	// Right Left Case
+	if (balance < -1 && key.compare(node->right->key) < 0) {
+		node->right = rightRotate(node->right);
+		return leftRotate(node);
+	}
+
+	/* return the (unchanged) node pointer */
 	return node;
 }
 
 /**
- * Inserts a new node into the binary search tree
+ * Print tree
  */
-struct node* BinaryTree::insert(std::string key) {
-	return insert(root, key);
-}
-
-/**
- * Searches binary tree for given key
- */
-struct node* BinaryTree::search(struct node* root, std::string key) {
-	// if the root key matches or is null, return the root
-	if (root == NULL || root->key == key)
-		return root;
-
-	// if the root key is alphabetically before the given key, search the roots right and return
-	if (key.compare(root->key) > 0)
-		return search(root->right, key);
-
-	// if we got this far, search the roots left and return
-	return search(root->left, key);
-}
-
-/**
- * Searches binary tree for a given key
- */
-struct node* BinaryTree::search(std::string key) {
-	return search(this->root, key);
+void BinaryTree::print(Node* node, int indent) {
+	if(node != nullptr) {
+		if(node->right)	print(node->right, indent+4);
+		if (indent) std::cout << std::setw(indent) << ' ';
+		if (node->right) std::cout<<" /\n" << std::setw(indent) << ' ';
+		std::cout<< node->key << "\n ";
+		if(node->left) {
+			std::cout << std::setw(indent) << ' ' <<" \\\n";
+			print(node->left, indent+4);
+		}
+	}
 }

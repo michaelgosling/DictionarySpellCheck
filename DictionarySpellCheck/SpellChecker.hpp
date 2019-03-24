@@ -17,12 +17,14 @@
 class SpellChecker {
 private:
 	BinaryTree dict;
+	Node* root;
 	std::string fileName;
 	void readFile();
 	bool checkSpelling(std::string word);
 public:
 	SpellChecker(std::string fileName);
 	void Check(std::string word);
+	void printTree();
 };
 
 #endif /* SpellChecker_hpp */
