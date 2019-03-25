@@ -12,10 +12,9 @@
 /**
  * Get height of node
  */
-int BinaryTree::height(Node *N) {
-	if (N == nullptr)
-		return 0;
-	return N->height;
+int BinaryTree::height(Node *node) {
+	if (node == nullptr) return 0;
+	return node->height;
 }
 
 /**
@@ -40,57 +39,63 @@ Node* BinaryTree::newNode(std::string key) {
 /**
  * Rotate right
  */
-Node* BinaryTree::rightRotate(Node *y) {
-	Node *x = y->left;
-	Node *T2 = x->right;
+Node* BinaryTree::rightRotate(Node *currentRoot) {
+	Node *newRoot = currentRoot->left;
+	Node *newLeft = newRoot->right;
 
 	// Perform rotation
-	x->right = y;
-	y->left = T2;
+	newRoot->right = currentRoot;
+	currentRoot->left = newLeft;
 
 	// Update heights
-	y->height = max(height(y->left), height(y->right)) + 1;
-	x->height = max(height(x->left), height(x->right)) + 1;
+	currentRoot->height = max(height(currentRoot->left),
+							  height(currentRoot->right)) + 1;
+	newRoot->height = max(height(newRoot->left),
+						  height(newRoot->right)) + 1;
 
 	// Return new root
-	return x;
+	return newRoot;
 }
 
 /**
  * Rotate Left
  */
-Node* BinaryTree::leftRotate(Node *x) {
-	Node *y = x->right;
-	Node *T2 = y->left;
+Node* BinaryTree::leftRotate(Node *currentRoot) {
+	Node *newRoot = currentRoot->right;
+	Node *newRight = newRoot->left;
 
 	// Perform rotation
-	y->left = x;
-	x->right = T2;
+	newRoot->left = currentRoot;
+	currentRoot->right = newRight;
 
 	// Update heights
-	x->height = max(height(x->left),
-					height(x->right)) + 1;
-	y->height = max(height(y->left),
-					height(y->right)) + 1;
+	currentRoot->height = max(height(currentRoot->left),
+					height(currentRoot->right)) + 1;
+	newRoot->height = max(height(newRoot->left),
+					height(newRoot->right)) + 1;
 
 	// Return new root
-	return y;
+	return newRoot;
 }
 
 /**
  * Get balance of node
  */
-int BinaryTree::getBalance(Node *N) {
-	if (N == nullptr)
-		return 0;
-	return height(N->left) - height(N->right);
+int BinaryTree::getBalance(Node *node) {
+	if (node == nullptr) return 0;
+	return height(node->left) - height(node->right);
 }
 
+/**
+ * Insert key/node into tree
+ */
 Node* BinaryTree::insert(Node* node, std::string key) {
-	/* 1. Perform the normal BST insertion */
 	if (node == nullptr)
 		return(newNode(key));
 
+	// if the key's value is smaller than the node key's value, insert to left,
+	// if the key's value is greater than the node key's value, insert right,
+	// else return given node
 	if (key.compare(node->key) < 0)
 		node->left = insert(node->left, key);
 	else if (key.compare(node->key) > 0)
@@ -98,17 +103,14 @@ Node* BinaryTree::insert(Node* node, std::string key) {
 	else // Equal keys are not allowed in BST
 		return node;
 
-	/* 2. Update height of this ancestor node */
+	// Update height of this node
 	node->height = 1 + max(height(node->left),
 						   height(node->right));
 
-	/* 3. Get the balance factor of this ancestor
-	 node to check whether this node became
-	 unbalanced */
+	// check balance
 	int balance = getBalance(node);
 
-	// If this node becomes unbalanced, then
-	// there are 4 cases
+	// If it's unbalanced, balance it:
 
 	// Left Left Case
 	if (balance > 1 && key.compare(node->left->key) < 0)
@@ -130,8 +132,21 @@ Node* BinaryTree::insert(Node* node, std::string key) {
 		return leftRotate(node);
 	}
 
-	/* return the (unchanged) node pointer */
+	// return unchanged node pointer
 	return node;
+}
+
+Node* BinaryTree::search(Node* node, std::string key){
+	// if node's key matches, return it
+	if (node == nullptr || node->key == key)
+		return node;
+
+	// if node's key is smaller than key, search right node
+	if (key.compare(node->key) > 0)
+		return search(node->right, key);
+
+	// if node's key is bigger than key, search left node
+	return search(node->left, key);
 }
 
 /**
@@ -139,13 +154,19 @@ Node* BinaryTree::insert(Node* node, std::string key) {
  */
 void BinaryTree::print(Node* node, int indent) {
 	if(node != nullptr) {
-		if(node->right)	print(node->right, indent+4);
+		if(node->right)	print(node->right, indent+5);
 		if (indent) std::cout << std::setw(indent) << ' ';
 		if (node->right) std::cout<<" /\n" << std::setw(indent) << ' ';
 		std::cout<< node->key << "\n ";
 		if(node->left) {
 			std::cout << std::setw(indent) << ' ' <<" \\\n";
-			print(node->left, indent+4);
+			print(node->left, indent+5);
 		}
 	}
+//	if( node != nullptr )
+//	{
+//		print(node->right, indent + 5 );
+//		std::cout << std::setw(indent) << node->key << std::endl;
+//		print(node->left, indent + 5 );
+//	}
 }

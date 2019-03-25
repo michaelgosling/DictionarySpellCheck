@@ -10,7 +10,14 @@
 #include "SpellChecker.hpp"
 
 int main(int argc, const char * argv[]) {
+	// create new spellchecker
 	SpellChecker checker("dictionary.txt");
+
+	// print out tree
 	checker.printTree();
+
+	// check mispelled file
+	checker.Check("mispelled.txt");
+	
 	return 0;
 }

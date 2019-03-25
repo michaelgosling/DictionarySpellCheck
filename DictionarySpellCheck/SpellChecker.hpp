@@ -18,12 +18,12 @@ class SpellChecker {
 private:
 	BinaryTree dict;
 	Node* root;
-	std::string fileName;
-	void readFile();
+	std::string dictFileName;
+	void readDictionary();
 	bool checkSpelling(std::string word);
 public:
-	SpellChecker(std::string fileName);
-	void Check(std::string word);
+	SpellChecker(std::string dictionaryFileName);
+	void Check(std::string fileName);
 	void printTree();
 };
 

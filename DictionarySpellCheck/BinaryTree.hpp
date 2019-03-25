@@ -31,6 +31,7 @@ private:
 public:
 	Node* insert(Node* node, std::string key);
 	void print(Node* node, int indent=0);
+	Node* search(Node* node, std::string key);
 };
 
 #endif /* BinaryTree_hpp */
